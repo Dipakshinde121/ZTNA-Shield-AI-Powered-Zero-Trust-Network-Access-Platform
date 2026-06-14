@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+WAF-CyberDefense/active_sessions.json
+WAF-CyberDefense/login_history.json
+WAF-CyberDefense/user_credentials.json
