@@ -28,6 +28,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'ZTNA Shield Security Gateway online.' });
 });
 
-app.listen(PORT, () => {
-  console.log(`[SYSTEM] Zero Trust Network Access (ZTNA) Control Plane online on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`[SYSTEM] Zero Trust Network Access (ZTNA) Control Plane online on port ${PORT}`);
+  });
+}
+
+export default app;

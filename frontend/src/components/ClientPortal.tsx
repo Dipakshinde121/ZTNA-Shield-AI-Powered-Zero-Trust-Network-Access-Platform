@@ -237,7 +237,7 @@ export const ClientPortal: React.FC = () => {
       for (let i = 1; i <= 6; i++) {
         updateLogs(`[Attempt ${i}/6] Sending incorrect login payload for: ${user?.email}...`);
         
-        const response = await fetch('http://localhost:5000/api/auth/login', {
+        const response = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: user?.email, password: 'wrong-passphrase-9999' })

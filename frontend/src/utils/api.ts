@@ -46,5 +46,5 @@ export async function ztnaFetch(
     options.body = JSON.stringify(body);
   }
 
-  return fetch(`http://localhost:5000${endpoint}`, options);
+  return fetch(`${endpoint}`, options);
 }

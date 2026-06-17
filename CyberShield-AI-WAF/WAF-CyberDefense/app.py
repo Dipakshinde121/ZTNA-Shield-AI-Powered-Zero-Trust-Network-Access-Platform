@@ -4,89 +4,26 @@
 #  Author: [Your Name] | Version: 3.0
 # ============================================================
 
+import streamlit as st
 import re
 import json
 import os
 import random
 from datetime import datetime
+import pandas as pd
+import matplotlib.pyplot as plt
 from flask import Flask
-
-if "VERCEL" in os.environ:
-    class Mock:
-        def __init__(self, *args, **kwargs):
-            pass
-        def __getattr__(self, name):
-            if name == "session_state":
-                class SessionState(dict):
-                    def __init__(self, *args, **kwargs):
-                        super().__init__(*args, **kwargs)
-                        self.update({
-                            "logged_in": False,
-                            "username": "",
-                            "total_requests": 0,
-                            "payload_input": "",
-                            "active_phone_otp": None,
-                            "active_email_otp": None,
-                            "signup_verifying": False,
-                            "signup_data": None,
-                            "login_verifying": False,
-                            "login_otp_username": None,
-                            "login_otp_type": None,
-                            "login_otp_target": None,
-                            "chat_history": []
-                        })
-                    def __getattr__(self, name):
-                        return self.get(name)
-                    def __setattr__(self, name, value):
-                        self[name] = value
-                return SessionState()
-            if name in ("columns", "tabs"):
-                def columns_or_tabs(spec, *args, **kwargs):
-                    length = len(spec) if isinstance(spec, list) else spec
-                    return [self] * length
-                return columns_or_tabs
-            return self
-        def __setitem__(self, key, value):
-            pass
-        def __getitem__(self, key):
-            return self
-        def __call__(self, *args, **kwargs):
-            return self
-        def __bool__(self):
-            return False
-        def __enter__(self):
-            return self
-        def __exit__(self, exc_type, exc_val, exc_tb):
-            pass
-            
-    st = Mock()
-    plt = Mock()
-    pd = Mock()
-else:
-    import streamlit as st
-    import matplotlib.pyplot as plt
-    import pandas as pd
 
 # Initialize Flask application
 app = Flask(__name__)
 
-@app.route('/')
-def home():
-    return {
-        "status": "CyberShield WAF is running",
-        "framework": "Flask",
-        "message": "Vercel serverless deployment check successful"
-    }
-
 # ── Page Configuration ──────────────────────────────────────
-if "VERCEL" not in os.environ:
-    st.set_page_config(
-        page_title="CyberShield WAF Dashboard",
-        page_icon="🛡️",
-        layout="wide",
-        initial_sidebar_state="expanded"
-    )
-
+st.set_page_config(
+    page_title="CyberShield WAF Dashboard",
+    page_icon="🛡️",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 # ── Configuration & Paths ───────────────────────────────────
 LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "attack_logs.json")

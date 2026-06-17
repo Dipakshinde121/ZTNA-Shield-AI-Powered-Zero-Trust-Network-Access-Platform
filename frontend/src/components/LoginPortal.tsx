@@ -119,7 +119,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
 
     try {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
+      const response = await fetch(`${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -184,7 +184,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
     addConsoleMessage(`Submitting MFA challenge validation...`, 'info');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/mfa/verify', {
+      const response = await fetch('/api/auth/mfa/verify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

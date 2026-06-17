@@ -128,7 +128,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const logout = async () => {
     if (token) {
       try {
-        await fetch('http://localhost:5000/api/auth/logout', {
+        await fetch('/api/auth/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
