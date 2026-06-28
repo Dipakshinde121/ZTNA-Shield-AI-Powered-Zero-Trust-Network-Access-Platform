@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { SignOptions } from 'jsonwebtoken';
 
 // Resolve paths to support running from root or backend directory
 const backendEnvPath = path.join(__dirname, '../.env');
@@ -37,3 +38,7 @@ export const JWT_SECRET = jwtSecret;
 export const JWT_REFRESH_SECRET = jwtRefreshSecret;
 export const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
 export const NODE_ENV = process.env.NODE_ENV || 'development';
+
+export const ACCESS_TOKEN_EXPIRES_IN: SignOptions['expiresIn'] = (process.env.ACCESS_TOKEN_EXPIRES_IN as SignOptions['expiresIn']) || '15m';
+export const REFRESH_TOKEN_EXPIRES_IN: SignOptions['expiresIn'] = (process.env.REFRESH_TOKEN_EXPIRES_IN as SignOptions['expiresIn']) || '7d';
+

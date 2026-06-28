@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { db, User, Session } from './db';
-import { JWT_SECRET, JWT_REFRESH_SECRET } from './config';
+import { JWT_SECRET, JWT_REFRESH_SECRET, ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from './config';
 
 const LOCKOUT_LIMIT = 5;
 const LOCKOUT_WINDOW_MINUTES = 10;
@@ -359,13 +359,13 @@ export class AuthService {
     const token = jwt.sign(
       { userId: user.id, role: user.role, email: user.email, sessionId },
       JWT_SECRET,
-      { expiresIn: '15m' }
+      { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
     );
 
     const refreshToken = jwt.sign(
       { userId: user.id, sessionId },
       JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
     );
 
     if (!existingSessionId) {
