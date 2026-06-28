@@ -1,0 +1,309 @@
+{
+  "users": [
+    {
+      "id": "usr-admin-seed",
+      "email": "admin@ztna-shield.internal",
+      "passwordHash": "$2a$10$8lYijq1.s559ow8.ZK08l.UgK6b8eNyXoamL0EsHNLV/GOp47iAOu",
+      "role": "Super Admin",
+      "department": "Security Operations",
+      "mfaSecret": null,
+      "mfaEnabled": false,
+      "mfaBackupCodes": [
+        "11111111",
+        "22222222",
+        "33333333"
+      ],
+      "status": "locked",
+      "failedLoginAttempts": 5,
+      "lockoutUntil": "2026-06-05T18:02:19.730Z",
+      "createdAt": "2026-06-05T17:47:34.199Z"
+    },
+    {
+      "id": "usr-employee-seed",
+      "email": "employee@ztna-shield.internal",
+      "passwordHash": "$2a$10$8lYijq1.s559ow8.ZK08l.bnuF.0eg0RikMA.q2qS66SvCAzfgJBm",
+      "role": "Employee",
+      "department": "Engineering",
+      "mfaSecret": null,
+      "mfaEnabled": false,
+      "mfaBackupCodes": [
+        "44444444",
+        "55555555",
+        "66666666"
+      ],
+      "status": "active",
+      "failedLoginAttempts": 0,
+      "lockoutUntil": null,
+      "createdAt": "2026-06-05T17:47:34.256Z"
+    }
+  ],
+  "devices": [
+    {
+      "id": "dev-1780681844401-3b57s",
+      "userId": "usr-admin-seed",
+      "fingerprint": "2c411feb",
+      "macHash": "a1:b2:c3:d4:e5:f6",
+      "hostname": "shield-workstation-01",
+      "os": "Windows 11",
+      "browser": "Chrome",
+      "diskEncryption": true,
+      "firewall": true,
+      "antivirus": true,
+      "status": "Trusted",
+      "registeredAt": "2026-06-05T17:50:44.401Z",
+      "lastActive": "2026-06-05T17:52:24.475Z"
+    },
+    {
+      "id": "dev-1780682018657-h2ecv",
+      "userId": "usr-employee-seed",
+      "fingerprint": "2c411feb",
+      "macHash": "a1:b2:c3:d4:e5:f6",
+      "hostname": "shield-workstation-01",
+      "os": "Windows 11",
+      "browser": "Chrome",
+      "diskEncryption": true,
+      "firewall": true,
+      "antivirus": true,
+      "status": "Trusted",
+      "registeredAt": "2026-06-05T17:53:38.657Z",
+      "lastActive": "2026-06-05T17:53:38.776Z"
+    }
+  ],
+  "sessions": [
+    {
+      "id": "ses-1780681844387-q1lwi",
+      "userId": "usr-admin-seed",
+      "deviceId": "dev-1780681844401-3b57s",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c3ItYWRtaW4tc2VlZCIsInJvbGUiOiJTdXBlciBBZG1pbiIsImVtYWlsIjoiYWRtaW5AenRuYS1zaGllbGQuaW50ZXJuYWwiLCJzZXNzaW9uSWQiOiJzZXMtMTc4MDY4MTg0NDM4Ny1xMWx3aSIsImlhdCI6MTc4MDY4MTg0NCwiZXhwIjoxNzgwNjgyNzQ0fQ.LGSZ-c4qisHjcfLH3TONM0F2xRXOzZ1rRhrR-ggCYCM",
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c3ItYWRtaW4tc2VlZCIsInNlc3Npb25JZCI6InNlcy0xNzgwNjgxODQ0Mzg3LXExbHdpIiwiaWF0IjoxNzgwNjgxODQ0LCJleHAiOjE3ODEyODY2NDR9.WQd0-uIWuffEV5VKx8dU_TUBX1V7lYEgXqePZU4jBFE",
+      "riskScore": 0,
+      "location": {
+        "ip": "::1",
+        "country": "US",
+        "city": "Simulator Location",
+        "vpn": false,
+        "tor": false
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0",
+      "lastVerified": "2026-06-05T17:52:24.476Z",
+      "expiresAt": "2026-06-12T17:50:44.396Z",
+      "active": false
+    },
+    {
+      "id": "ses-1780682018654-s53t8",
+      "userId": "usr-employee-seed",
+      "deviceId": "dev-1780682018657-h2ecv",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c3ItZW1wbG95ZWUtc2VlZCIsInJvbGUiOiJFbXBsb3llZSIsImVtYWlsIjoiZW1wbG95ZWVAenRuYS1zaGllbGQuaW50ZXJuYWwiLCJzZXNzaW9uSWQiOiJzZXMtMTc4MDY4MjAxODY1NC1zNTN0OCIsImlhdCI6MTc4MDY4MjAxOCwiZXhwIjoxNzgwNjgyOTE4fQ.hbtY9UJYxCV4x6iRjJ68ZVDtPh2WKii2YlZEz6Zrbag",
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c3ItZW1wbG95ZWUtc2VlZCIsInNlc3Npb25JZCI6InNlcy0xNzgwNjgyMDE4NjU0LXM1M3Q4IiwiaWF0IjoxNzgwNjgyMDE4LCJleHAiOjE3ODEyODY4MTh9.z5TbbE3qEs4aNMZJlR66KzOQ0T2IipRcNEcLQzEyFoE",
+      "riskScore": 0,
+      "location": {
+        "ip": "::1",
+        "country": "US",
+        "city": "Simulator Location",
+        "vpn": false,
+        "tor": false
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0",
+      "lastVerified": "2026-06-05T17:53:38.777Z",
+      "expiresAt": "2026-06-12T17:53:38.654Z",
+      "active": false
+    }
+  ],
+  "logs": [
+    {
+      "id": "log-1780682018780-i4uja36yq",
+      "timestamp": "2026-06-05T17:53:38.781Z",
+      "category": "threat",
+      "level": "critical",
+      "userId": "usr-employee-seed",
+      "userEmail": "employee@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Continuous Auth Poll: Session terminated dynamically due to security violations.",
+      "details": "RBAC Policy violation [MFA Enforcement]: Access requires roles: [Super Admin, Security Administrator]. Current role: Employee."
+    },
+    {
+      "id": "log-1780682018658-1z6s3nsws",
+      "timestamp": "2026-06-05T17:53:38.658Z",
+      "category": "device",
+      "level": "info",
+      "userId": "usr-employee-seed",
+      "ip": "127.0.0.1",
+      "country": "LOCAL",
+      "message": "New device registered. Status determined as Trusted.",
+      "details": "OS: Windows 11, Hostname: shield-workstation-01, Disk Encrypted: true"
+    },
+    {
+      "id": "log-1780682018655-93mtg524u",
+      "timestamp": "2026-06-05T17:53:38.655Z",
+      "category": "auth",
+      "level": "info",
+      "userId": "usr-employee-seed",
+      "userEmail": "employee@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "User logged in successfully without MFA",
+      "details": "User agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0"
+    },
+    {
+      "id": "log-1780681962937-5e50mqud4",
+      "timestamp": "2026-06-05T17:52:42.937Z",
+      "category": "auth",
+      "level": "warning",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Blocked login attempt. Account locked.",
+      "details": "Attempts: 5"
+    },
+    {
+      "id": "log-1780681944480-668jdm4b8",
+      "timestamp": "2026-06-05T17:52:24.480Z",
+      "category": "threat",
+      "level": "critical",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Continuous Auth Poll: Session terminated dynamically due to security violations.",
+      "details": "Account state is suspended or locked. Current status: locked"
+    },
+    {
+      "id": "log-1780681940137-azt95s5v7",
+      "timestamp": "2026-06-05T17:52:20.137Z",
+      "category": "auth",
+      "level": "warning",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Blocked login attempt. Account locked.",
+      "details": "Attempts: 5"
+    },
+    {
+      "id": "log-1780681939730-rw6jvcwbd",
+      "timestamp": "2026-06-05T17:52:19.730Z",
+      "category": "threat",
+      "level": "critical",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Account locked due to brute force protection.",
+      "details": "Threshold exceeded: 5 attempts."
+    },
+    {
+      "id": "log-1780681916358-hbwagplsf",
+      "timestamp": "2026-06-05T17:51:56.358Z",
+      "category": "gateway",
+      "level": "warning",
+      "userId": "usr-admin-seed",
+      "ip": "127.0.0.1",
+      "country": "LOCAL",
+      "message": "JIT Access requested for api by admin@ztna-shield.internal",
+      "details": "Duration: 5 mins, Reason: tt"
+    },
+    {
+      "id": "log-1780681888658-lt06folv3",
+      "timestamp": "2026-06-05T17:51:28.658Z",
+      "category": "gateway",
+      "level": "warning",
+      "userId": "usr-admin-seed",
+      "ip": "127.0.0.1",
+      "country": "LOCAL",
+      "message": "JIT Access requested for api by admin@ztna-shield.internal",
+      "details": "Duration: 5 mins, Reason: js"
+    },
+    {
+      "id": "log-1780681844402-fvgvhzb8k",
+      "timestamp": "2026-06-05T17:50:44.402Z",
+      "category": "device",
+      "level": "info",
+      "userId": "usr-admin-seed",
+      "ip": "127.0.0.1",
+      "country": "LOCAL",
+      "message": "New device registered. Status determined as Trusted.",
+      "details": "OS: Windows 11, Hostname: shield-workstation-01, Disk Encrypted: true"
+    },
+    {
+      "id": "log-1780681844398-oxr2352jy",
+      "timestamp": "2026-06-05T17:50:44.398Z",
+      "category": "auth",
+      "level": "info",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "User logged in successfully without MFA",
+      "details": "User agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36 Edg/148.0.0.0"
+    }
+  ],
+  "policies": [
+    {
+      "id": "pol-1",
+      "name": "MFA Enforcement",
+      "description": "Enforce Multi-Factor Authentication for all Admin and Security roles.",
+      "type": "RBAC",
+      "rules": {
+        "roles": [
+          "Super Admin",
+          "Security Administrator"
+        ]
+      },
+      "active": true
+    },
+    {
+      "id": "pol-2",
+      "name": "Secure Office Hours & OS Check",
+      "description": "Enforce access to internal resources only from Trusted devices with disk encryption and active firewall.",
+      "type": "ABAC",
+      "rules": {
+        "minTrustLevel": "Trusted",
+        "maxRiskScore": 40
+      },
+      "active": true
+    },
+    {
+      "id": "pol-3",
+      "name": "Geographic Access Restriction",
+      "description": "Block resource access requests originating from blacklisted countries.",
+      "type": "ABAC",
+      "rules": {
+        "allowedCountries": [
+          "US",
+          "CA",
+          "GB",
+          "IN",
+          "DE",
+          "FR",
+          "JP",
+          "AU"
+        ]
+      },
+      "active": true
+    }
+  ],
+  "jitRequests": [
+    {
+      "id": "jit-1780681888657-6sphk",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "resource": "api",
+      "durationMinutes": 5,
+      "reason": "js",
+      "status": "pending",
+      "createdAt": "2026-06-05T17:51:28.657Z"
+    },
+    {
+      "id": "jit-1780681916358-luu8d",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "resource": "api",
+      "durationMinutes": 5,
+      "reason": "tt",
+      "status": "pending",
+      "createdAt": "2026-06-05T17:51:56.358Z"
+    }
+  ]
+}
