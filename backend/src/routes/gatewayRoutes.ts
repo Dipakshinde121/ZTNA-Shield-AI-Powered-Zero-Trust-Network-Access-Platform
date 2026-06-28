@@ -4,6 +4,7 @@ import { db } from '../db';
 import { DeviceTrustEngine } from '../device';
 import { RiskAssessmentEngine } from '../risk';
 import { PolicyEngine } from '../policy';
+import crypto from 'crypto';
 
 const router = Router();
 
@@ -23,6 +24,54 @@ const getDeviceContext = (req: Request) => {
   };
 };
 
+// Cryptographic Device Attestation verification
+function verifyDeviceSignature(
+  secret: string,
+  timestamp: string,
+  posture: {
+    fingerprint: string;
+    diskEncryption: boolean;
+    firewall: boolean;
+    antivirus: boolean;
+    isVPN: boolean;
+    isTor: boolean;
+  },
+  signature: string
+): boolean {
+  // Replay attack mitigation: Verify timestamp is within 30 seconds
+  const signatureTime = parseInt(timestamp, 10);
+  if (isNaN(signatureTime) || Math.abs(Date.now() - signatureTime) > 30000) {
+    console.warn('[SECURITY ATTESTATION] Signature timestamp out of acceptable window:', timestamp);
+    return false;
+  }
+
+  if (signature.length !== 64) {
+    return false;
+  }
+
+  // Create message payload matching frontend signature logic
+  const message = [
+    timestamp,
+    posture.fingerprint,
+    String(posture.diskEncryption),
+    String(posture.firewall),
+    String(posture.antivirus),
+    String(posture.isVPN),
+    String(posture.isTor)
+  ].join(':');
+
+  // Compute expected HMAC-SHA256
+  const expectedSignature = crypto.createHmac('sha256', secret)
+    .update(message)
+    .digest('hex');
+
+  try {
+    return crypto.timingSafeEqual(Buffer.from(signature, 'hex'), Buffer.from(expectedSignature, 'hex'));
+  } catch (e) {
+    return false;
+  }
+}
+
 // Continuous Authentication Session Status Check
 router.get('/session-status', verifyToken, (req: Request, res: Response) => {
   const tokenUser = (req as any).user;
@@ -34,11 +83,56 @@ router.get('/session-status', verifyToken, (req: Request, res: Response) => {
     return res.status(401).json({ status: 'blocked', reason: 'User profile not found' });
   }
 
+  const session = db.sessions.find(s => s.id === tokenUser.sessionId && s.active);
+  if (!session) {
+    return res.status(401).json({ status: 'blocked', reason: 'Session is inactive or invalid.' });
+  }
+
   // Extract simulated device state
   const deviceContext = getDeviceContext(req);
+
+  // Look up device record
+  const device = db.devices.find(d => d.fingerprint === deviceContext.fingerprint && d.userId === user.id);
+  if (!device) {
+    return res.status(400).json({ status: 'blocked', reason: 'Endpoint device not registered for this user.' });
+  }
+
+  // Verify cryptographic attestation signature
+  const signature = req.headers['x-device-signature'] as string;
+  const timestamp = req.headers['x-device-timestamp'] as string;
+
+  if (!signature || !timestamp) {
+    return res.status(401).json({ status: 'blocked', reason: 'Device attestation signature or timestamp missing.' });
+  }
+
+  const isVerified = verifyDeviceSignature(device.deviceSecret, timestamp, deviceContext, signature);
+  if (!isVerified) {
+    db.log({
+      category: 'threat',
+      level: 'critical',
+      userId: user.id,
+      userEmail: user.email,
+      ip,
+      country,
+      message: `Device attestation failed: signature mismatch or replay attempt detected.`,
+      details: `FP: ${deviceContext.fingerprint}, Signature: ${signature}`
+    });
+    return res.json({ status: 'blocked', reason: 'Device attestation verification failed.' });
+  }
+
+  // Posture telemetry verified! Update posture in EDR registry database
+  device.lastActive = new Date().toISOString();
+  device.diskEncryption = deviceContext.diskEncryption;
+  device.firewall = deviceContext.firewall;
+  device.antivirus = deviceContext.antivirus;
+  device.os = deviceContext.os;
+  device.browser = deviceContext.browser;
   
-  // Re-run Device Trust Engine check
-  const device = DeviceTrustEngine.checkOrRegisterDevice(user.id, deviceContext);
+  const { status: calculatedStatus } = DeviceTrustEngine.evaluatePosture(deviceContext);
+  if (device.status !== 'Blocked') {
+    device.status = calculatedStatus;
+  }
+  db.save();
 
   // Re-run AI Risk Assessment
   const riskResult = RiskAssessmentEngine.evaluate(
@@ -50,22 +144,17 @@ router.get('/session-status', verifyToken, (req: Request, res: Response) => {
   );
 
   // Update session record in DB
-  const session = db.sessions.find(s => s.id === tokenUser.sessionId);
-  if (session) {
-    session.riskScore = riskResult.riskScore;
-    session.deviceId = device.id;
-    session.lastVerified = new Date().toISOString();
-    
-    // Bind location
-    session.location = {
-      ip,
-      country,
-      city: 'Simulator Location',
-      vpn: deviceContext.isVPN,
-      tor: deviceContext.isTor
-    };
-    db.save();
-  }
+  session.riskScore = riskResult.riskScore;
+  session.deviceId = device.id;
+  session.lastVerified = new Date().toISOString();
+  session.location = {
+    ip,
+    country,
+    city: 'Simulator Location',
+    vpn: deviceContext.isVPN,
+    tor: deviceContext.isTor
+  };
+  db.save();
 
   // Evaluate Policies
   const policyResult = PolicyEngine.evaluateAccess(
@@ -77,10 +166,8 @@ router.get('/session-status', verifyToken, (req: Request, res: Response) => {
   );
 
   if (!policyResult.allowed) {
-    if (session) {
-      session.active = false; // Kill session
-      db.save();
-    }
+    session.active = false; // Kill session
+    db.save();
     
     db.log({
       category: 'threat',
@@ -140,11 +227,32 @@ router.get('/access/:resource', verifyToken, (req: Request, res: Response) => {
     });
   }
 
-  // Extract device headers and check trust
-  const deviceContext = getDeviceContext(req);
-  const device = DeviceTrustEngine.checkOrRegisterDevice(user.id, deviceContext);
+  // Retrieve session and associated device posture from EDR database registry (ignoring request headers)
+  const session = db.sessions.find(s => s.id === tokenUser.sessionId && s.active);
+  if (!session) {
+    return res.status(401).json({ error: 'Session is inactive or invalid.' });
+  }
 
-  // Evaluate Risk Score
+  const device = session.deviceId ? db.devices.find(d => d.id === session.deviceId) : null;
+  if (!device) {
+    return res.status(403).json({ error: 'Endpoint device is not registered or authenticated.' });
+  }
+
+  // Construct device context from EDR database record to run risk engine evaluation
+  const deviceContext = {
+    fingerprint: device.fingerprint,
+    macHash: device.macHash,
+    hostname: device.hostname,
+    os: device.os,
+    browser: device.browser,
+    diskEncryption: device.diskEncryption,
+    firewall: device.firewall,
+    antivirus: device.antivirus,
+    isVPN: session.location.vpn,
+    isTor: session.location.tor
+  };
+
+  // Evaluate Risk Score using database EDR record context
   const riskResult = RiskAssessmentEngine.evaluate(user, deviceContext, null, ip, country);
 
   // Evaluate security policy
@@ -157,12 +265,9 @@ router.get('/access/:resource', verifyToken, (req: Request, res: Response) => {
   );
 
   // Update session
-  const session = db.sessions.find(s => s.id === tokenUser.sessionId);
-  if (session) {
-    session.riskScore = riskResult.riskScore;
-    session.lastVerified = new Date().toISOString();
-    db.save();
-  }
+  session.riskScore = riskResult.riskScore;
+  session.lastVerified = new Date().toISOString();
+  db.save();
 
   if (!policyResult.allowed) {
     db.log({

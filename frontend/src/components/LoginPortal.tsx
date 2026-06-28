@@ -140,7 +140,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
           setMfaUserId(data.userId);
           addConsoleMessage(`MFA validation challenge requested for User ID: ${data.userId}`, 'warn');
         } else {
-          setAuthData(data.token, data.refreshToken, data.user, data.deviceStatus, data.deviceId);
+          setAuthData(data.token, data.refreshToken, data.user, data.deviceStatus, data.deviceId, data.deviceSecret);
           addConsoleMessage(`Session created. Device state resolved: ${data.deviceStatus}`, 'success');
           onLoginSuccess();
         }
@@ -199,7 +199,7 @@ export const LoginPortal: React.FC<LoginPortalProps> = ({ onLoginSuccess }) => {
         throw new Error(data.error || 'MFA validation failed');
       }
 
-      setAuthData(data.token, data.refreshToken, data.user, data.deviceStatus, data.deviceId);
+      setAuthData(data.token, data.refreshToken, data.user, data.deviceStatus, data.deviceId, data.deviceSecret);
       addConsoleMessage(`MFA verification approved. Session unlocked.`, 'success');
       onLoginSuccess();
     } catch (err: any) {

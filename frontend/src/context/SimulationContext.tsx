@@ -30,7 +30,15 @@ interface SimulationContextType {
   user: any | null;
   deviceStatus: 'Trusted' | 'Unknown' | 'Compromised' | 'Blocked';
   deviceId: string | null;
-  setAuthData: (token: string | null, refreshToken: string | null, user: any, deviceStatus: 'Trusted' | 'Unknown' | 'Compromised' | 'Blocked', deviceId: string | null) => void;
+  deviceSecret: string | null;
+  setAuthData: (
+    token: string | null,
+    refreshToken: string | null,
+    user: any,
+    deviceStatus: 'Trusted' | 'Unknown' | 'Compromised' | 'Blocked',
+    deviceId: string | null,
+    deviceSecret?: string | null
+  ) => void;
   logout: () => Promise<void>;
   consoleMessages: ConsoleMessage[];
   addConsoleMessage: (message: string, type?: ConsoleMessage['type']) => void;
@@ -60,7 +68,8 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('ztna_refresh'));
   const [user, setUser] = useState<any | null>(null);
   const [deviceStatus, setDeviceStatus] = useState<'Trusted' | 'Unknown' | 'Compromised' | 'Blocked'>('Unknown');
-  const [deviceId, setDeviceId] = useState<string | null>(null);
+  const [deviceId, setDeviceId] = useState<string | null>(localStorage.getItem('ztna_device_id'));
+  const [deviceSecret, setDeviceSecret] = useState<string | null>(localStorage.getItem('ztna_device_secret'));
   const [consoleMessages, setConsoleMessages] = useState<ConsoleMessage[]>([]);
 
   // Parse user from token if available on load
@@ -104,13 +113,18 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     newRefreshToken: string | null,
     newUser: any,
     newDeviceStatus: 'Trusted' | 'Unknown' | 'Compromised' | 'Blocked',
-    newDeviceId: string | null
+    newDeviceId: string | null,
+    newDeviceSecret?: string | null
   ) => {
     setToken(newToken);
     setRefreshToken(newRefreshToken);
     setUser(newUser);
     setDeviceStatus(newDeviceStatus);
     setDeviceId(newDeviceId);
+
+    if (newDeviceSecret !== undefined) {
+      setDeviceSecret(newDeviceSecret);
+    }
 
     if (newToken) {
       localStorage.setItem('ztna_token', newToken);
@@ -122,6 +136,20 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       localStorage.setItem('ztna_refresh', newRefreshToken);
     } else {
       localStorage.removeItem('ztna_refresh');
+    }
+
+    if (newDeviceId) {
+      localStorage.setItem('ztna_device_id', newDeviceId);
+    } else {
+      localStorage.removeItem('ztna_device_id');
+    }
+
+    if (newDeviceSecret !== undefined) {
+      if (newDeviceSecret) {
+        localStorage.setItem('ztna_device_secret', newDeviceSecret);
+      } else {
+        localStorage.removeItem('ztna_device_secret');
+      }
     }
   };
 
@@ -139,7 +167,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       }
     }
     
-    setAuthData(null, null, null, 'Unknown', null);
+    setAuthData(null, null, null, 'Unknown', null, null);
     addConsoleMessage('Session cleared. User logged out.', 'info');
   };
 
@@ -152,6 +180,7 @@ export const SimulationProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       user,
       deviceStatus,
       deviceId,
+      deviceSecret,
       setAuthData,
       logout,
       consoleMessages,

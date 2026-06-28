@@ -1,4 +1,5 @@
 import { db, Device } from './db';
+import crypto from 'crypto';
 
 export class DeviceTrustEngine {
   /**
@@ -75,6 +76,11 @@ export class DeviceTrustEngine {
       device.os = info.os;
       device.browser = info.browser;
       
+      // Securely upgrade legacy device without deviceSecret
+      if (!device.deviceSecret) {
+        device.deviceSecret = crypto.randomBytes(32).toString('hex');
+      }
+
       // If device is compromised or blocked, maintain that status, otherwise update based on posture
       if (device.status !== 'Blocked') {
         device.status = calculatedStatus;
@@ -85,6 +91,7 @@ export class DeviceTrustEngine {
     }
 
     // Register new device
+    const deviceSecret = crypto.randomBytes(32).toString('hex');
     device = {
       id: `dev-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
       userId,
@@ -98,7 +105,8 @@ export class DeviceTrustEngine {
       antivirus: info.antivirus,
       status: calculatedStatus,
       registeredAt: new Date().toISOString(),
-      lastActive: new Date().toISOString()
+      lastActive: new Date().toISOString(),
+      deviceSecret
     };
 
     db.devices.push(device);

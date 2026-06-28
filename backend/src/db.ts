@@ -35,6 +35,7 @@ export interface Device {
   status: 'Trusted' | 'Unknown' | 'Compromised' | 'Blocked';
   registeredAt: string;
   lastActive: string;
+  deviceSecret: string;
 }
 
 export interface Session {
