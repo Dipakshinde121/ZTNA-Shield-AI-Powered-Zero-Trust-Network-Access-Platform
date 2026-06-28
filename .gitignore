@@ -19,6 +19,7 @@ db.json
 .env.development.local
 .env.test.local
 .env.production.local
+secrets.json
 
 # IDE configurations
 .vscode/

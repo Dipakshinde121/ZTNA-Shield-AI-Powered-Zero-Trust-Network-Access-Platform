@@ -3,7 +3,7 @@
     {
       "id": "usr-admin-seed",
       "email": "admin@ztna-shield.internal",
-      "passwordHash": "$2a$10$8lYijq1.s559ow8.ZK08l.UgK6b8eNyXoamL0EsHNLV/GOp47iAOu",
+      "passwordHash": "$2a$10$qZx1/tj3Bb3lfKkT7HHr8ubjo0.GSgxxoSZ8hcFKO7U7mw05XgTdO",
       "role": "Super Admin",
       "department": "Security Operations",
       "mfaSecret": null,
@@ -21,7 +21,7 @@
     {
       "id": "usr-employee-seed",
       "email": "employee@ztna-shield.internal",
-      "passwordHash": "$2a$10$8lYijq1.s559ow8.ZK08l.bnuF.0eg0RikMA.q2qS66SvCAzfgJBm",
+      "passwordHash": "$2a$10$qZx1/tj3Bb3lfKkT7HHr8u5SVcapXUs4ZWk26vrpKk2F9mDc73lGW",
       "role": "Employee",
       "department": "Engineering",
       "mfaSecret": null,

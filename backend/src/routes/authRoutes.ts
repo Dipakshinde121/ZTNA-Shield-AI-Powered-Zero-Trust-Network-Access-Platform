@@ -3,9 +3,9 @@ import { AuthService } from '../auth';
 import { DeviceTrustEngine } from '../device';
 import { db } from '../db';
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../config';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'ztna-control-plane-secret-key-101';
 
 // Middleware to protect routes and verify JWT
 export const verifyToken = (req: Request, res: Response, next: any) => {

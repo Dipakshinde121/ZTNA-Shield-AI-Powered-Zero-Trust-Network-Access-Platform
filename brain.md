@@ -316,5 +316,10 @@ Orchestrated in the root [package.json](file:///e:/121/ZTNA-Shield-AI-Powered-Ze
     ```
     *(Launches Express Backend control plane on port `5000` and Vite React Frontend dev server on port `5173` concurrently)*
 *   **Seed Credentials:**
-    *   **SecOps Admin:** `admin@ztna-shield.internal` / `admin_password_101`
-    *   **Employee User:** `employee@ztna-shield.internal` / `employee_password_101`
+    *   Seed user passwords are generated randomly on startup (if missing) and written to the gitignored [secrets.json](file:///e:/121/ZTNA-Shield-AI-Powered-Zero-Trust-Network-Access-Platform-main/secrets.json) in the project root.
+    *   **Default Accounts:** `admin@ztna-shield.internal` and `employee@ztna-shield.internal`
+    *   To view current seed passwords, check [secrets.json](file:///e:/121/ZTNA-Shield-AI-Powered-Zero-Trust-Network-Access-Platform-main/secrets.json) (never committed to git).
+
+*   **MFA (TOTP) Compliance:**
+    *   MFA secrets are generated as standard Base32 strings (`generateBase32Secret`) compatible with standard phone authenticator apps (Google/Microsoft Authenticator).
+    *   TOTP codes are verified using the official RFC 6238 standard: HMAC-SHA1 calculation and dynamic truncation.
