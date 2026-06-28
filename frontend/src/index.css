@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #08090c;
+    color: #f3f4f6;
+    font-family: 'Inter', 'Outfit', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Custom Scrollbar for Cyberpunk theme */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0d0f14;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #222834;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #10b981;
+  }
+}
+
+@layer utilities {
+  .text-glow-green {
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.6);
+  }
+  .text-glow-blue {
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+  }
+  .text-glow-red {
+    text-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
+  }
+  .bg-grid-pattern {
+    background-size: 40px 40px;
+    background-image: 
+      linear-gradient(to right, rgba(34, 40, 52, 0.15) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(34, 40, 52, 0.15) 1px, transparent 1px);
+  }
+  .cyber-gradient-bg {
+    background: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, rgba(8, 9, 12, 1) 80%);
+  }
+}
+
+/* Scanline and Flicker Effects for Cyber SOC Terminal */
+.scanlines {
+  position: relative;
+  overflow: hidden;
+}
+.scanlines::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+  z-index: 10;
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+}
+
+/* Typing terminal cursor */
+@keyframes blink {
+  50% { opacity: 0; }
+}
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background-color: #10b981;
+  animation: blink 1s step-end infinite;
+  margin-left: 4px;
+  vertical-align: middle;
+}
