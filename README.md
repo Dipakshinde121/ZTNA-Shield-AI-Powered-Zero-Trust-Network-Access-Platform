@@ -1,4 +1,4 @@
-# ZTNA-Shield: AI-Powered Zero Trust Network Access Platform
+#ZTNA-Shield: AI-Powered Zero Trust Network Access Platform
 
 ZTNA-Shield is an enterprise-grade Zero Trust Network Access (ZTNA) platform and Secure Access Gateway simulator. It implements continuous identity authentication, device posture checks, real-time behavioral analytics, and a Web Application Firewall (WAF) to replace traditional perimeter VPNs.
 
