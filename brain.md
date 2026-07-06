@@ -81,7 +81,7 @@ ZTNA-Shield-AI-Powered-Zero-Trust-Network-Access-Platform-main/
 
 ---
 
-## 🗃️ Simulated Database Schema & Types
+##  🗃️ Simulated Database Schema & Types
 
 Defined in [backend/src/db.ts](file:///e:/121/ZTNA-Shield-AI-Powered-Zero-Trust-Network-Access-Platform-main/backend/src/db.ts).
 
