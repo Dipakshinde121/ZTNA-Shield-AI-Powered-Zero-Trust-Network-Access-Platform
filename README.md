@@ -6,7 +6,7 @@ The platform features an interactive **Client Access Portal** (where users can r
 
 ---
 
-## 🛡️ Core Security Architecture
+##🛡️ Core Security Architecture
 
 ZTNA-Shield operates strictly on the Zero Trust security philosophy of **"Never Trust, Always Verify."**
 
