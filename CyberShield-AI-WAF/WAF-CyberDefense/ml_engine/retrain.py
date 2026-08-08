@@ -92,13 +92,15 @@ def collect_training_samples(logs_file_path: str):
             with open(logs_file_path, "r") as f:
                 logs = json.load(f)
                 
+            dynamic_count = 0
             for log in logs:
-                payload = log.get("user_input")
+                payload = log.get("payload") or log.get("user_input")
                 # If it was logged, it was treated as an attack (malicious)
                 if payload and payload not in malicious_payloads:
                     malicious_payloads.append(payload)
+                    dynamic_count += 1
                     
-            print(f"[ML-RETRAIN] Collected {len(logs)} dynamic samples from attack logs.")
+            print(f"[ML-RETRAIN] Collected {dynamic_count} new dynamic samples from attack logs.")
         except Exception as e:
             print(f"[ML-RETRAIN] Error loading attack logs for training: {e}")
 
