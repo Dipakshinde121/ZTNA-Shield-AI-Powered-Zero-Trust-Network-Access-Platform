@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 const DB_FILE = path.join(__dirname, '../../db.json');
 
@@ -34,6 +35,7 @@ export interface Device {
   status: 'Trusted' | 'Unknown' | 'Compromised' | 'Blocked';
   registeredAt: string;
   lastActive: string;
+  deviceSecret: string;
 }
 
 export interface Session {
@@ -165,6 +167,12 @@ class Database {
         if (!this.data.policies || this.data.policies.length === 0) {
           this.data.policies = DEFAULT_POLICIES;
         }
+
+        // Check if secrets.json is missing, regenerate if so
+        const secretsPath = path.join(__dirname, '../../secrets.json');
+        if (!fs.existsSync(secretsPath)) {
+          this.regenerateAndSaveSecrets();
+        }
       } else {
         this.seedDefaults();
       }
@@ -174,13 +182,61 @@ class Database {
     }
   }
 
+  private regenerateAndSaveSecrets() {
+    const salt = bcrypt.genSaltSync(10);
+    const adminPassword = crypto.randomBytes(16).toString('hex');
+    const employeePassword = crypto.randomBytes(16).toString('hex');
+
+    const secretsPath = path.join(__dirname, '../../secrets.json');
+    const secrets = {
+      admin: {
+        email: 'admin@ztna-shield.internal',
+        password: adminPassword
+      },
+      employee: {
+        email: 'employee@ztna-shield.internal',
+        password: employeePassword
+      }
+    };
+    fs.writeFileSync(secretsPath, JSON.stringify(secrets, null, 2), 'utf-8');
+
+    // Update hashes in the loaded data
+    const adminUser = this.data.users.find(u => u.email === 'admin@ztna-shield.internal');
+    if (adminUser) {
+      adminUser.passwordHash = bcrypt.hashSync(adminPassword, salt);
+    }
+    const employeeUser = this.data.users.find(u => u.email === 'employee@ztna-shield.internal');
+    if (employeeUser) {
+      employeeUser.passwordHash = bcrypt.hashSync(employeePassword, salt);
+    }
+    
+    this.save();
+    console.log('[DATABASE] Plaintext credentials were missing. Regenerated and updated secrets.json');
+  }
+
   private seedDefaults() {
     const salt = bcrypt.genSaltSync(10);
+    
+    const adminPassword = crypto.randomBytes(16).toString('hex');
+    const employeePassword = crypto.randomBytes(16).toString('hex');
+
+    const secretsPath = path.join(__dirname, '../../secrets.json');
+    const secrets = {
+      admin: {
+        email: 'admin@ztna-shield.internal',
+        password: adminPassword
+      },
+      employee: {
+        email: 'employee@ztna-shield.internal',
+        password: employeePassword
+      }
+    };
+    fs.writeFileSync(secretsPath, JSON.stringify(secrets, null, 2), 'utf-8');
     
     const adminUser: User = {
       id: 'usr-admin-seed',
       email: 'admin@ztna-shield.internal',
-      passwordHash: bcrypt.hashSync('admin_password_101', salt),
+      passwordHash: bcrypt.hashSync(adminPassword, salt),
       role: 'Super Admin',
       department: 'Security Operations',
       mfaSecret: null,
@@ -195,7 +251,7 @@ class Database {
     const employeeUser: User = {
       id: 'usr-employee-seed',
       email: 'employee@ztna-shield.internal',
-      passwordHash: bcrypt.hashSync('employee_password_101', salt),
+      passwordHash: bcrypt.hashSync(employeePassword, salt),
       role: 'Employee',
       department: 'Engineering',
       mfaSecret: null,
@@ -210,7 +266,7 @@ class Database {
     this.data.users = [adminUser, employeeUser];
     this.data.policies = DEFAULT_POLICIES;
     this.save();
-    console.log('[DATABASE] Seed database initialized: admin@ztna-shield.internal / admin_password_101');
+    console.log('[DATABASE] Seed database initialized. Plaintext credentials written to secrets.json');
   }
 
   public save() {

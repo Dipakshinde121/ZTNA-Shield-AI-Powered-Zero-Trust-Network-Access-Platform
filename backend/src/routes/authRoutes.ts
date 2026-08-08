@@ -3,9 +3,9 @@ import { AuthService } from '../auth';
 import { DeviceTrustEngine } from '../device';
 import { db } from '../db';
 import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '../config';
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || 'ztna-control-plane-secret-key-101';
 
 // Middleware to protect routes and verify JWT
 export const verifyToken = (req: Request, res: Response, next: any) => {
@@ -70,6 +70,7 @@ router.post('/login', (req: Request, res: Response) => {
   // Register / update device trust status
   let deviceStatus = 'Unknown';
   let deviceId = null;
+  let deviceSecret = null;
   if (deviceInfo && loginResult.user) {
     const dev = DeviceTrustEngine.checkOrRegisterDevice(loginResult.user.id, {
       fingerprint: deviceInfo.fingerprint,
@@ -83,6 +84,7 @@ router.post('/login', (req: Request, res: Response) => {
     });
     deviceStatus = dev.status;
     deviceId = dev.id;
+    deviceSecret = dev.deviceSecret;
 
     // Bind session to device
     const session = db.sessions.find(s => s.token === loginResult.token);
@@ -105,7 +107,8 @@ router.post('/login', (req: Request, res: Response) => {
     refreshToken: loginResult.refreshToken,
     user: loginResult.user,
     deviceStatus,
-    deviceId
+    deviceId,
+    deviceSecret
   });
 });
 
@@ -126,6 +129,7 @@ router.post('/mfa/verify', (req: Request, res: Response) => {
   const user = db.users.find(u => u.id === userId);
   let deviceStatus = 'Unknown';
   let deviceId = null;
+  let deviceSecret = null;
 
   if (deviceInfo && user) {
     const dev = DeviceTrustEngine.checkOrRegisterDevice(user.id, {
@@ -140,6 +144,7 @@ router.post('/mfa/verify', (req: Request, res: Response) => {
     });
     deviceStatus = dev.status;
     deviceId = dev.id;
+    deviceSecret = dev.deviceSecret;
 
     // Bind session to device
     const session = db.sessions.find(s => s.token === result.token);
@@ -164,7 +169,8 @@ router.post('/mfa/verify', (req: Request, res: Response) => {
     refreshToken: result.refreshToken,
     user: userWithoutHash,
     deviceStatus,
-    deviceId
+    deviceId,
+    deviceSecret
   });
 });
 

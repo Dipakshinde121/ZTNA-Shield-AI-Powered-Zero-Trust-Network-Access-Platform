@@ -1,23 +1,82 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { db, User, Session } from './db';
+import { JWT_SECRET, JWT_REFRESH_SECRET, ACCESS_TOKEN_EXPIRES_IN, REFRESH_TOKEN_EXPIRES_IN } from './config';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ztna-control-plane-secret-key-101';
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'ztna-refresh-token-secret-key-101';
 const LOCKOUT_LIMIT = 5;
 const LOCKOUT_WINDOW_MINUTES = 10;
 
-// Simple simulation of TOTP (RFC 6238)
-// Returns a 6-digit string based on seed & current 30s epoch interval
-export function generateTOTPCode(secret: string): string {
-  const timeIndex = Math.floor(Date.now() / 30000);
-  const hash = (timeIndex * secret.length).toString();
-  let code = '';
-  for (let i = 0; i < 6; i++) {
-    const charCode = hash.charCodeAt((i + secret.length) % hash.length) || 48;
-    code += (charCode % 10).toString();
+// Base32 decoder for RFC 6238 compliant secret decoding
+function base32Decode(base32Str: string): Buffer {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  const cleanStr = base32Str.toUpperCase().replace(/=+$/, '');
+  let bits = '';
+
+  for (let i = 0; i < cleanStr.length; i++) {
+    const idx = alphabet.indexOf(cleanStr[i]);
+    if (idx === -1) {
+      throw new Error('Invalid base32 character: ' + cleanStr[i]);
+    }
+    bits += idx.toString(2).padStart(5, '0');
   }
-  return code;
+
+  const bytes: number[] = [];
+  for (let i = 0; i + 8 <= bits.length; i += 8) {
+    bytes.push(parseInt(bits.substr(i, 8), 2));
+  }
+
+  return Buffer.from(bytes);
+}
+
+// Generate a cryptographically secure 16-character Base32 secret
+export function generateBase32Secret(): string {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let secret = '';
+  const bytes = crypto.randomBytes(10); // 10 bytes = 80 bits = 16 base32 characters
+  for (let i = 0; i < bytes.length; i++) {
+    secret += alphabet[bytes[i] % 32];
+  }
+  return secret;
+}
+
+// RFC 6238 compliant TOTP generator using HMAC-SHA1
+export function generateTOTPCode(secret: string): string {
+  try {
+    let secretBuffer: Buffer;
+    if (secret.startsWith('secret-')) {
+      // Fallback for legacy mock secrets to prevent breaking existing state
+      secretBuffer = Buffer.from(secret);
+    } else {
+      // Standard Base32 secret decoding
+      secretBuffer = base32Decode(secret);
+    }
+
+    const timeIndex = Math.floor(Date.now() / 30000);
+    
+    // Create an 8-byte big-endian buffer for the time counter step
+    const counterBuffer = Buffer.alloc(8);
+    counterBuffer.writeUInt32BE(0, 0);
+    counterBuffer.writeUInt32BE(timeIndex, 4);
+
+    // Compute HMAC-SHA1
+    const hmac = crypto.createHmac('sha1', secretBuffer)
+      .update(counterBuffer)
+      .digest();
+
+    // Dynamic truncation per RFC 4226 / RFC 6238
+    const offset = hmac[hmac.length - 1] & 0xf;
+    const binary = ((hmac[offset] & 0x7f) << 24) |
+                   ((hmac[offset + 1] & 0xff) << 16) |
+                   ((hmac[offset + 2] & 0xff) << 8) |
+                   (hmac[offset + 3] & 0xff);
+
+    const otp = binary % 1000000;
+    return otp.toString().padStart(6, '0');
+  } catch (error) {
+    console.error('[TOTP] Failed to generate code:', error);
+    return '000000';
+  }
 }
 
 export class AuthService {
@@ -210,7 +269,7 @@ export class AuthService {
     const user = db.users.find(u => u.id === userId);
     if (!user) return { success: false, error: 'User not found' };
 
-    const secret = `secret-${Math.random().toString(36).substr(2, 12).toUpperCase()}`;
+    const secret = generateBase32Secret();
     user.mfaSecret = secret;
     db.save();
 
@@ -300,13 +359,13 @@ export class AuthService {
     const token = jwt.sign(
       { userId: user.id, role: user.role, email: user.email, sessionId },
       JWT_SECRET,
-      { expiresIn: '15m' }
+      { expiresIn: ACCESS_TOKEN_EXPIRES_IN }
     );
 
     const refreshToken = jwt.sign(
       { userId: user.id, sessionId },
       JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: REFRESH_TOKEN_EXPIRES_IN }
     );
 
     if (!existingSessionId) {

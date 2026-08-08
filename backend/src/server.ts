@@ -1,15 +1,13 @@
+// Import configuration first to initialize environment variables and prevent load-order bugs
+import { PORT } from './config';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
 import deviceRoutes from './routes/deviceRoutes';
 import gatewayRoutes from './routes/gatewayRoutes';
 import adminRoutes from './routes/adminRoutes';
 
-dotenv.config();
-
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 app.use(cors({
   origin: '*', // Allow all origins for local simulator development

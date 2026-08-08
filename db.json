@@ -3,7 +3,7 @@
     {
       "id": "usr-admin-seed",
       "email": "admin@ztna-shield.internal",
-      "passwordHash": "$2a$10$8lYijq1.s559ow8.ZK08l.UgK6b8eNyXoamL0EsHNLV/GOp47iAOu",
+      "passwordHash": "$2a$10$qZx1/tj3Bb3lfKkT7HHr8ubjo0.GSgxxoSZ8hcFKO7U7mw05XgTdO",
       "role": "Super Admin",
       "department": "Security Operations",
       "mfaSecret": null,
@@ -13,15 +13,15 @@
         "22222222",
         "33333333"
       ],
-      "status": "locked",
-      "failedLoginAttempts": 5,
-      "lockoutUntil": "2026-06-05T18:02:19.730Z",
+      "status": "active",
+      "failedLoginAttempts": 0,
+      "lockoutUntil": null,
       "createdAt": "2026-06-05T17:47:34.199Z"
     },
     {
       "id": "usr-employee-seed",
       "email": "employee@ztna-shield.internal",
-      "passwordHash": "$2a$10$8lYijq1.s559ow8.ZK08l.bnuF.0eg0RikMA.q2qS66SvCAzfgJBm",
+      "passwordHash": "$2a$10$qZx1/tj3Bb3lfKkT7HHr8u5SVcapXUs4ZWk26vrpKk2F9mDc73lGW",
       "role": "Employee",
       "department": "Engineering",
       "mfaSecret": null,
@@ -67,6 +67,22 @@
       "status": "Trusted",
       "registeredAt": "2026-06-05T17:53:38.657Z",
       "lastActive": "2026-06-05T17:53:38.776Z"
+    },
+    {
+      "id": "dev-1782646432302-mzhb7",
+      "userId": "usr-admin-seed",
+      "fingerprint": "test-attestation-device-01",
+      "macHash": "00:11:22:33:44:55",
+      "hostname": "test-attacker-box",
+      "os": "Windows 11",
+      "browser": "Chrome 120",
+      "diskEncryption": true,
+      "firewall": false,
+      "antivirus": true,
+      "status": "Unknown",
+      "registeredAt": "2026-06-28T11:33:52.302Z",
+      "lastActive": "2026-06-28T11:34:00.141Z",
+      "deviceSecret": "45e41df29e25854ef3a679dec2e8ddff4aaa2608c9451c3d88c66b27e45a966b"
     }
   ],
   "sessions": [
@@ -107,9 +123,154 @@
       "lastVerified": "2026-06-05T17:53:38.777Z",
       "expiresAt": "2026-06-12T17:53:38.654Z",
       "active": false
+    },
+    {
+      "id": "ses-1782646432298-ggceg",
+      "userId": "usr-admin-seed",
+      "deviceId": "dev-1782646432302-mzhb7",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c3ItYWRtaW4tc2VlZCIsInJvbGUiOiJTdXBlciBBZG1pbiIsImVtYWlsIjoiYWRtaW5AenRuYS1zaGllbGQuaW50ZXJuYWwiLCJzZXNzaW9uSWQiOiJzZXMtMTc4MjY0NjQzMjI5OC1nZ2NlZyIsImlhdCI6MTc4MjY0NjQzMiwiZXhwIjoxNzgyNjQ3MzMyfQ.Sb8KYBcwhr399SVHVJPzB-Q42F1LWYic8jM5OfD7bDE",
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c3ItYWRtaW4tc2VlZCIsInNlc3Npb25JZCI6InNlcy0xNzgyNjQ2NDMyMjk4LWdnY2VnIiwiaWF0IjoxNzgyNjQ2NDMyLCJleHAiOjE3ODMyNTEyMzJ9.xj2zmAlBujWMYniQ0AMrUFmgLQlRyKj-U3ujNphEBAk",
+      "riskScore": 0,
+      "location": {
+        "ip": "::1",
+        "country": "US",
+        "city": "Simulator Location",
+        "vpn": false,
+        "tor": false
+      },
+      "userAgent": "node",
+      "lastVerified": "2026-06-28T11:33:52.319Z",
+      "expiresAt": "2026-07-05T11:33:52.301Z",
+      "active": false
+    },
+    {
+      "id": "ses-1782646440121-7cmji",
+      "userId": "usr-admin-seed",
+      "deviceId": "dev-1782646432302-mzhb7",
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c3ItYWRtaW4tc2VlZCIsInJvbGUiOiJTdXBlciBBZG1pbiIsImVtYWlsIjoiYWRtaW5AenRuYS1zaGllbGQuaW50ZXJuYWwiLCJzZXNzaW9uSWQiOiJzZXMtMTc4MjY0NjQ0MDEyMS03Y21qaSIsImlhdCI6MTc4MjY0NjQ0MCwiZXhwIjoxNzgyNjQ3MzQwfQ.F8A3fadV4kk4jP8NDYPcM7pOhz46C-aqXZXH8kPjtiA",
+      "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c3ItYWRtaW4tc2VlZCIsInNlc3Npb25JZCI6InNlcy0xNzgyNjQ2NDQwMTIxLTdjbWppIiwiaWF0IjoxNzgyNjQ2NDQwLCJleHAiOjE3ODMyNTEyNDB9.wIleFEW5WhYyynLtDW6nYiBHMMeDSuUqe-fpVUEj3X0",
+      "riskScore": 0,
+      "location": {
+        "ip": "::1",
+        "country": "US",
+        "city": "Simulator Location",
+        "vpn": false,
+        "tor": false
+      },
+      "userAgent": "node",
+      "lastVerified": "2026-06-28T11:34:00.141Z",
+      "expiresAt": "2026-07-05T11:34:00.122Z",
+      "active": false
     }
   ],
   "logs": [
+    {
+      "id": "log-1782646440142-hsyxa0zkh",
+      "timestamp": "2026-06-28T11:34:00.142Z",
+      "category": "threat",
+      "level": "critical",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Continuous Auth Poll: Session terminated dynamically due to security violations.",
+      "details": "ABAC Policy violation [Secure Office Hours & OS Check]: Access requires verified posture with \"Trusted\" state. Current device state: Unknown."
+    },
+    {
+      "id": "log-1782646440136-n3pxjebky",
+      "timestamp": "2026-06-28T11:34:00.136Z",
+      "category": "threat",
+      "level": "critical",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Device attestation failed: signature mismatch or replay attempt detected.",
+      "details": "FP: test-attestation-device-01, Signature: 0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "id": "log-1782646440132-4ekggl9q3",
+      "timestamp": "2026-06-28T11:34:00.132Z",
+      "category": "gateway",
+      "level": "info",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Gateway Allowed: Access granted to protected resource [PAYROLL]",
+      "details": "Session Risk Score: 0. Device Status: Trusted"
+    },
+    {
+      "id": "log-1782646440122-aczjdda19",
+      "timestamp": "2026-06-28T11:34:00.122Z",
+      "category": "auth",
+      "level": "info",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "User logged in successfully without MFA",
+      "details": "User agent: node"
+    },
+    {
+      "id": "log-1782646432320-oikncc35v",
+      "timestamp": "2026-06-28T11:33:52.320Z",
+      "category": "threat",
+      "level": "critical",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Continuous Auth Poll: Session terminated dynamically due to security violations.",
+      "details": "ABAC Policy violation [Secure Office Hours & OS Check]: Access requires verified posture with \"Trusted\" state. Current device state: Unknown."
+    },
+    {
+      "id": "log-1782646432316-3euejm715",
+      "timestamp": "2026-06-28T11:33:52.316Z",
+      "category": "threat",
+      "level": "critical",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Device attestation failed: signature mismatch or replay attempt detected.",
+      "details": "FP: test-attestation-device-01, Signature: 0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    {
+      "id": "log-1782646432313-z8aeyvh06",
+      "timestamp": "2026-06-28T11:33:52.313Z",
+      "category": "gateway",
+      "level": "info",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "Gateway Allowed: Access granted to protected resource [PAYROLL]",
+      "details": "Session Risk Score: 0. Device Status: Trusted"
+    },
+    {
+      "id": "log-1782646432302-0zq5nshoz",
+      "timestamp": "2026-06-28T11:33:52.302Z",
+      "category": "device",
+      "level": "info",
+      "userId": "usr-admin-seed",
+      "ip": "127.0.0.1",
+      "country": "LOCAL",
+      "message": "New device registered. Status determined as Trusted.",
+      "details": "OS: Windows 11, Hostname: test-attacker-box, Disk Encrypted: true"
+    },
+    {
+      "id": "log-1782646432301-l0rdlv85h",
+      "timestamp": "2026-06-28T11:33:52.301Z",
+      "category": "auth",
+      "level": "info",
+      "userId": "usr-admin-seed",
+      "userEmail": "admin@ztna-shield.internal",
+      "ip": "::1",
+      "country": "US",
+      "message": "User logged in successfully without MFA",
+      "details": "User agent: node"
+    },
     {
       "id": "log-1780682018780-i4uja36yq",
       "timestamp": "2026-06-05T17:53:38.781Z",
