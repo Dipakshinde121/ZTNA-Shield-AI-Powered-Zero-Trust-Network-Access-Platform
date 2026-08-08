@@ -220,12 +220,60 @@ def delete_session(token):
 
 
 # ── Threat Detection Logic ──────────────────────────────────
+try:
+    from ml_engine.decision_engine import evaluate_payload, get_ml_status
+    from ml_engine.retrain import retrain_pipeline
+    ML_IMPORT_SUCCESS = True
+except ImportError as e:
+    ML_IMPORT_SUCCESS = False
+    print(f"[ML-ENGINE-IMPORT] Warning: Could not import ml_engine modules: {e}")
+
 def detect_attack(user_input):
-    """Scan the input against all attack signatures."""
-    for attack_type, data in ATTACK_SIGNATURES.items():
+    """Scan the input against all signatures and evaluate with ML decision engine."""
+    # First check pattern signatures (Regex)
+    matched = False
+    attack_type = None
+    severity = None
+    regex_score = 0
+    
+    for att_type, data in ATTACK_SIGNATURES.items():
         for pattern in data["patterns"]:
             if re.search(pattern, user_input, re.IGNORECASE):
-                return True, attack_type, data["severity"], data["score"]
+                matched = True
+                attack_type = att_type
+                severity = data["severity"]
+                regex_score = data["score"]
+                break
+        if matched:
+            break
+            
+    if ML_IMPORT_SUCCESS:
+        try:
+            eval_res = evaluate_payload(user_input, matched, regex_score)
+            
+            # Store in session state for UI dashboard to display
+            try:
+                if "st" in globals() and hasattr(st, "session_state"):
+                    st.session_state.last_ml_decision = eval_res
+            except Exception:
+                pass
+            
+            # Map outputs
+            is_malicious = eval_res["block"] or eval_res["flag"]
+            final_score = eval_res["threat_score"]
+            
+            # If ML detected a threat but regex didn't map a type, assign anomaly/classifier labels
+            if is_malicious and not attack_type:
+                attack_type = "AI Anomaly / Zero-Day"
+                severity = "HIGH" if final_score >= 70 else "MEDIUM"
+                
+            return is_malicious, attack_type, severity, final_score
+        except Exception as ex:
+            print(f"[ML-ENGINE-EVAL] Execution error: {ex}")
+            
+    # Fallback to regex-only logic
+    if matched:
+        return True, attack_type, severity, regex_score
     return False, None, None, 0
 
 def get_threat_level(blocked_count, total_count):
@@ -649,6 +697,22 @@ with tab_dashboard:
                 else:
                     st.success("✔ **Request Passed — No Threats Detected**  \nPayload successfully parsed and allowed through WAF filtering.")
 
+                # Visual trace for ML layer scores
+                if ML_IMPORT_SUCCESS and "last_ml_decision" in st.session_state:
+                    mld = st.session_state.last_ml_decision
+                    with st.expander("🛡️ **SHIELD-AI Hybrid Intelligence Trace**", expanded=True):
+                        sc1, sc2, sc3 = st.columns(3)
+                        with sc1:
+                            st.metric("Signature Match Score", f"{mld['regex_score']}/100")
+                        with sc2:
+                            st.metric("ML Anomaly Score", f"{mld['anomaly_score'] * 100:.1f}/100")
+                        with sc3:
+                            st.metric("ML Classifier Probability", f"{mld['classifier_score'] * 100:.1f}/100")
+                        
+                        st.write("**Detection Engine Logs:**")
+                        for detail in mld["details"]:
+                            st.write(f"- {detail}")
+
     with col_right:
         st.subheader("📊 Traffic Distribution")
         if st.session_state.username == "dipak":
@@ -775,6 +839,31 @@ with tab_status:
             st.dataframe(history_df, width="stretch", hide_index=True)
     else:
         st.info("🔒 Operator login audit history is restricted to Administrator.")
+
+    if ML_IMPORT_SUCCESS:
+        st.markdown("---")
+        st.write("#### 🤖 Machine Learning Detection Core")
+        ml_stat = get_ml_status()
+        
+        col_ml1, col_ml2 = st.columns(2)
+        with col_ml1:
+            st.markdown(f"**ML Engine State:** {'🟢 `ACTIVE`' if ml_stat['enabled'] else '🔴 `DISABLED`'}")
+            st.markdown(f"**Unsupervised Anomaly Model (Isolation Forest):** {'🟢 `ONLINE` (Model loaded)' if ml_stat['anomaly_online'] else '🔴 `OFFLINE` (Needs training)'}")
+            st.markdown(f"**Supervised Classifier Model (Random Forest):** {'🟢 `ONLINE` (Model loaded)' if ml_stat['classifier_online'] else '🔴 `OFFLINE` (Needs training)'}")
+            
+        with col_ml2:
+            st.write("##### Model Retraining & Update Pipeline")
+            st.write("Retrain the ML layers using standard benign seeds and dynamic attack patterns from the SIEM logs.")
+            
+            if st.button("🔄 Retrain ML Detection Models"):
+                with st.spinner("Executing ML Retraining Pipeline..."):
+                    try:
+                        retrain_status = retrain_pipeline(LOG_FILE)
+                        st.success("🎉 Retraining Completed Successfully!")
+                        st.json(retrain_status)
+                        st.rerun()
+                    except Exception as ret_ex:
+                        st.error(f"Retraining failed: {ret_ex}")
 
 
 # ── AI Helper Functions ──────────────────────────────────────
